@@ -6,7 +6,7 @@
 	"description": "Logs in to ESIA URL by provided login/password and dumps out redirection URL.",
 	"repository": {
 		"type": "git",
-		"url": "ssh://gitolite@git.ekapusta.tech/esia-client"
+		"url": "https://github.com/AnnaNokhrina/oauth2-esia.git"
 	},
 	"license": "UNLICENSED",
 	"dependencies": {
