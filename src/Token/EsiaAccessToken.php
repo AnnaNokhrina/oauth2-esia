@@ -4,10 +4,12 @@ namespace Ekapusta\OAuth2Esia\Token;
 
 use Ekapusta\OAuth2Esia\Interfaces\Token\ScopedTokenInterface;
 use InvalidArgumentException;
-use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer;
-use Lcobucci\JWT\Signer\Key;
-use Lcobucci\JWT\ValidationData;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\Token\Plain;
+use Lcobucci\JWT\Validation\Validator;
 use League\OAuth2\Client\Token\AccessToken;
 
 class EsiaAccessToken extends AccessToken implements ScopedTokenInterface
