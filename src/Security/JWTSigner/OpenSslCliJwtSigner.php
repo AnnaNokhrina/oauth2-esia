@@ -29,7 +29,7 @@ final class OpenSslCliJwtSigner extends BaseSigner
 
     public function doVerify($expected, $payload, Key $key)
     {
-        $verify = new TmpFile($key->getContent());
+        $verify = new TmpFile($key->contents());
         $signature = new TmpFile($expected);
 
         Process::fromArray([
@@ -45,7 +45,7 @@ final class OpenSslCliJwtSigner extends BaseSigner
 
     public function createHash($payload, Key $key)
     {
-        $sign = new TmpFile($key->getContent());
+        $sign = new TmpFile($key->contents());
 
         return (string) Process::fromArray([
             $this->toolPath,
