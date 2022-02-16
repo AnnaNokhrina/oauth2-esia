@@ -3,10 +3,9 @@
 namespace Ekapusta\OAuth2Esia\Security\JWTSigner;
 
 use Ekapusta\OAuth2Esia\Transport\Process;
-use Lcobucci\JWT\Signer\BaseSigner;
 use Lcobucci\JWT\Signer\Key;
 
-final class OpenSslCliJwtSigner extends BaseSigner
+final class OpenSslCliJwtSigner
 {
     private $toolPath;
     private $algorythmId;
