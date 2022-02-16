@@ -18,23 +18,37 @@ class EsiaAccessToken extends AccessToken implements ScopedTokenInterface
     {
         parent::__construct($options);
 
-        $this->parsedToken = (new Parser())->parse($this->accessToken);
-        $this->resourceOwnerId = $this->parsedToken->getClaim('urn:esia:sbj_id');
+        /** @var Plain parsedToken */
+        $this->parsedToken = (new Parser(new JoseEncoder()))->parse($this->accessToken);
+        $this->resourceOwnerId = $this->parsedToken->claims()->get(name: 'urn:esia:sbj_id');
 
-        if (!$this->parsedToken->validate(new ValidationData())) {
-            throw new InvalidArgumentException('Access token is invalid: '.var_export($options, true));
+
+        $validatorToken = new Validator();
+        if (!$validatorToken->validate(token: $this->parsedToken)) {
+            throw new InvalidArgumentException(message: 'Access token is invalid: ' . var_export(value: $options, return: true));
         }
 
-        if ($publicKeyPath && !$this->parsedToken->verify($signer, new Key(file_get_contents($publicKeyPath)))) {
-            throw new InvalidArgumentException('Access token can not be verified: '.var_export($options, true));
+        $key = InMemory::file(path: $publicKeyPath);
+
+        $verifyToken = false;
+        if ($this->parsedToken->headers()->get(name: 'alg') === $signer->algorithmId()) {
+            $verifyToken = $signer->verify(
+                expected: $this->parsedToken->signature()->hash(),
+                payload: $this->parsedToken->payload(),
+                key: $key,
+            );
+        }
+
+        if (!$verifyToken) {
+            throw new InvalidArgumentException(message: 'Access token can not be verified: ' . var_export(value: $options, return: true));
         }
     }
 
-    public function getScopes()
+    public function getScopes(): array
     {
         $scopes = [];
-        foreach (explode(' ', $this->parsedToken->getClaim('scope', '')) as $scope) {
-            $scopes[] = parse_url($scope, PHP_URL_PATH);
+        foreach (explode(separator: ' ', string: $this->parsedToken->claims()->get(name: 'scope', default: '')) as $scope) {
+            $scopes[] = parse_url(url: $scope, component: PHP_URL_PATH);
         }
 
         return $scopes;
